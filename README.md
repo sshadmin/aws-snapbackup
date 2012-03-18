@@ -18,6 +18,34 @@ script would make a new snapshot of a single volume with option __-m__.
 If CRT and PK files are not provided respectively as 'cert.pem' and 'pk.pem'
 under directory '/etc/aws' you should specify them both with __-C__ and __-K__
 
+## Help
+
+    Usage:
+      ./snapback.pl [-a|-h]
+    Additional options   :
+      [-m <days>] [-x <count>] [-C <file>] [-K <file>]
+    Debug & Help options :
+      [-d]
+
+    Description:
+
+    Options Legend :
+      *M* - Mandatory
+      *O* - Optional
+
+    Options :
+    -a,  --automagic                *O* Enables Automagic(R) mode.. at
+                                        the moment this is the only choice
+    -m,  --mindays     <days>       *O* Specify minimum amount of days that
+                                        have to be passed since last backup
+                                             to create a new snapshot
+    -x,  --maxcount    <number>     *O* Specify the maximum amount of
+                                        snapshots for a single EBS volume
+    -C,  --crtfile     <file>       *O* Specify the AWS certificate file
+    -K,  --pkfile      <file>       *O* Specify the AWS private key file
+    -d,  --debug                    *O* Prints LOTS of debug info on stdout
+    -h,  --help                     *O* Prints this help screen
+
 
 ## Installation details
 * create dedicated user

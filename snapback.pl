@@ -134,7 +134,7 @@ if ($automagicMode){
 sub help {
   print "
   Usage:
-    $script_name [-a|-h]
+    ./snapback.pl [-a|-h]
   Additional options   :
     [-m <days>] [-x <count>] [-C <file>] [-K <file>]
   Debug & Help options :
@@ -147,17 +147,17 @@ sub help {
     *O* - Optional
 
   Options :
-  -a,  --automagic                     *O* Enables Automagic(R) mode.. at
-                                           the moment this is the only choice
-  -m,  --mindays     <days>            *O* Specify minimum amount of days that
-                                           have to be passed since last backup
+  -a,  --automagic                *O* Enables Automagic(R) mode.. at
+                                      the moment this is the only choice
+  -m,  --mindays     <days>       *O* Specify minimum amount of days that
+                                      have to be passed since last backup
                                            to create a new snapshot
-  -x,  --maxcount    <number>          *O* Specify the maximum amount of
-                                           snapshots for a single EBS volume
-  -C,  --crtfile     <file>            *O* Specify the AWS certificate file
-  -K,  --pkfile      <file>            *O* Specify the AWS private key file
-  -d,  --debug                         *O* Prints LOTS of debug info on stdout
-  -h,  --help                          *O* Prints this help screen"."\n";
+  -x,  --maxcount    <number>     *O* Specify the maximum amount of
+                                      snapshots for a single EBS volume
+  -C,  --crtfile     <file>       *O* Specify the AWS certificate file
+  -K,  --pkfile      <file>       *O* Specify the AWS private key file
+  -d,  --debug                    *O* Prints LOTS of debug info on stdout
+  -h,  --help                     *O* Prints this help screen\n";
 }
 
 sub cleanExit {
