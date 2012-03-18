@@ -15,7 +15,7 @@ script would make a new snapshot of a single volume with option __-m__.
 If CRT and PK files are not provided respectively as 'cert.pem' and 'pk.pem'
 under directory '/etc/aws' you should specify them both with __-C__ and __-K__
 
-### WARNING 1__**
+### WARNING 1
 If deleting of the last snapshots fails, the script automatically steps
 to "the snapshot after the last one", and continues.
 
