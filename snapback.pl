@@ -7,7 +7,6 @@ use JSON ;
 my $script_name = "$0" ;
 my $version     = '0.0.1' ;
 my $srcLink     = 'https://github.com/sshadmin/aws-snapbackup';
-my $releaseDate = '1332029264 epoc';
 
 # BEGIN helper function declaration
 # actual code is at the end of the file
@@ -25,8 +24,8 @@ sub parseConfigFile ;         # toDo - parse provided config file
 my ( $help , $debug ) ;
 my ( %Opts ) ;
 my $automagicMode ;
-my $minSnapDays=7*(24*60*60) ; #in seconds to e compared with epoc time
-my $maxSnapCount=4 ; #in seconds to be compared with epoc time
+my $minSnapDays=6*(24*60*60) ; #in seconds to e compared with EPOCH time
+my $maxSnapCount=4 ;           #number of snapshots pe single EBS volume
 my $crtFile='/etc/aws/cert.pem';
 my $pkFile='/etc/aws/pk.pem' ;
 
@@ -66,7 +65,7 @@ if ($#ARGV ge 0) {
   };
 
   if ($Opts{version}) {
-    print $script_name.': version '.$version. ' Date:'.$releaseDate."\n";
+    print $script_name.': version '.$version. "\n";
     print 'Source Code repository:'.$srcLink."\n";
     exit 0 ;
   };
@@ -82,9 +81,9 @@ if ($#ARGV ge 0) {
   };
 
   if ($Opts{minDays}) {
-    $minSnapDays=$Opts{minDays}*(24*60*60); # converts in seconds to allow
-                                            # comparison with epoc time
-    print "-> min snapshot days <- $minSnapDays\n" if($debug);
+    $minSnapDays=scalar($Opts{minDays})*(24*60*60); # converts in seconds to allow
+                                            # comparison with EPOCH time
+    print "-> min snapshot days (in seconds) <- $minSnapDays\n" if($debug);
   }
 
   if ($Opts{maxCount}) {
@@ -165,16 +164,15 @@ sub cleanExit {
 }
 
 sub trim {
-  my $string = '' ;
-  $string = $_[0] ;
-    $string =~ s/^\s+//;
-    $string =~ s/\s+$//;
+  my $string = $_[0] || '' ;
+  $string =~ s/^\s+//;
+  $string =~ s/\s+$//;
   return $string
 }
 
 sub convertDate {
   my  $localDate=$_[0] ;
-      $localDate=~s/\+[0-9]*//;
+      $localDate=~s/\+[0-9]*//; #get rid of the +0000 at the end of dates
   my $cmd=('date +%s -d ' . $localDate);
   my $out=qx($cmd);
   return trim($out);
@@ -286,7 +284,7 @@ sub automagic {
       # here var max snap count gets modified
       print "maxSnapCount -> $maxSnapCount \n" if ($debug);
       @{$validSnapshots->{$vol}}=updateSnaps(@{$validSnapshots->{$vol}},
-                                              $minSnapDays,$maxSnapCount);
+                                             $minSnapDays,$maxSnapCount);
       if($debug) {
         print 'UpdatedSnaps :'."\n" ;
         foreach my $snap (@{$validSnapshots->{$vol}}){
@@ -360,14 +358,21 @@ sub automagic {
     # if $#snapshots > 4 then delete oldest
     sub updateSnaps {
       my @presentSnaps=$_[0];
-      my $minSnapDays=$_[1];
-      # my $maxSnapCount=$_[2]; #need bugfix
+      # my $minSnapDays=$_[1]; #need fix, value becomes an Hash ref inside sub
+      # my $maxSnapCount=$_[2]; #need fix, value becomes an Hash ref inside sub
       my @resultActions=();
       # check if last snap is > 7 days ago
       my $lastSnap=$presentSnaps[$#presentSnaps];
       my $now=convertDate('now');
+      if ($debug){
+        print "Last Date -> ".$lastSnap->{date}."\n";
+        print "Now -> ".$now."\n";
+        print "Min Days -> ".$minSnapDays."\n";
+        print "Min difference -> ".($now-$minSnapDays)."\n";
+        print "maxSnapCount -> ".$maxSnapCount."\n";
+      };
       if ($lastSnap->{date} < ($now-$minSnapDays)){
-        #do new snapshot
+        #create new snapshot
         print "Adding a new snapshot" if ($debug);
         my $createOutput=createNewSnap($lastSnap->{volID});
         push(@resultActions,'newSnap');
@@ -378,11 +383,11 @@ sub automagic {
       print "scalar(\@presentSnaps)-> ".scalar(@presentSnaps)."\n" if ($debug);
       print "maxSnapCount -> $maxSnapCount \n" if ($debug);
       while(scalar(@presentSnaps) > $maxSnapCount){
-        print "Deleting an old snapshot" if ($debug);
-        my $oldestSnap=$presentSnaps[$snapIdx];
-        my $deleteOutput=deleteOldSNap($oldestSnap->{snapID});
-        push @resultActions,'delete' ;
         my $oldSize=scalar(@presentSnaps);
+        my $oldestSnap=$presentSnaps[$snapIdx];
+        print "Deleting old snapshot".$oldestSnap->{snapID} if ($debug);
+        my $deleteOutput=deleteOldSNap($oldestSnap->{snapID});
+        push(@resultActions,'delete');
         @presentSnaps=retrieveSnaps($lastSnap->{volID});
         my $newSize=scalar(@presentSnaps);
         # if length does not decrease then move over
