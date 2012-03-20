@@ -2,10 +2,10 @@
 use strict ;
 # use warnings ;
 use Getopt::Long ;
-use Error qw(:try);
-try {
+eval {
   use JSON ;
-} catch Error with {
+} ;
+if (@_) {
   my $exception=shift;
   print "Please install JSON module and make available to current user.\n";
   exit 1;
