@@ -50,6 +50,7 @@ we have plans to make things better in future releases.
                                         snapshots for a single EBS volume
     -C,  --crtfile     <file>       *O* Specify the AWS certificate file
     -K,  --pkfile      <file>       *O* Specify the AWS private key file
+    -r,  --include-root             *O* Include root devices in snapshot backup
     -d,  --debug                    *O* Prints LOTS of debug info on stdout
     -h,  --help                     *O* Prints this help screen
 
