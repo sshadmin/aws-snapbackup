@@ -6,7 +6,6 @@ if ( not eval { require JSON; 1; } ) {
   print "Please install JSON module and make it available to current user.\n";
   exit 1;
 }
-require JSON ;
 JSON->import(qw(decode_json from_json));
 
 my $script_name = "$0" ;
@@ -123,8 +122,8 @@ my $ec2DataResponse=qx['curl' '-s' $ec2DataUrl];
 if ($debug) {
   print "Response: " .$ec2DataResponse."\n";
 }
-my $instanceDataRef=decode_json $ec2DataResponse;
-my $instanceDataText=from_json($ec2DataResponse, {utf8 => 1});
+my $instanceDataRef=JSON->decode_json($ec2DataResponse);
+my $instanceDataText=JSON->from_json($ec2DataResponse, {utf8 => 1});
 my $instanceId=$instanceDataRef->{"instanceId"};
 my $instanceRegion=$instanceDataRef->{"region"};
 if ($debug) {
