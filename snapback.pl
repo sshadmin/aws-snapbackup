@@ -122,7 +122,15 @@ my $ec2DataResponse=qx['curl' '-s' $ec2DataUrl];
 if ($debug) {
   print "Response: " .$ec2DataResponse."\n";
 }
-my $instanceDataRef=JSON::XS::decode_json($ec2DataResponse);
+my $instanceDataRef='';
+eval {
+  $instanceDataRef=JSON::XS::decode_json($ec2DataResponse);
+};
+if (@_){
+  print"Data returned from AWS Instance API not recognized\n";
+  print"API output was:\n".@_;
+  exit 1;
+};
 my $instanceDataText=JSON::XS::from_json($ec2DataResponse, {utf8 => 1});
 my $instanceId=$instanceDataRef->{"instanceId"};
 my $instanceRegion=$instanceDataRef->{"region"};
