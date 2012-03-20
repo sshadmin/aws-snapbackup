@@ -334,7 +334,7 @@ sub automagic {
     # create a newSnap
     sub createNewSnap {
       my $volumeId=$_[0];
-      my $snapDescription='Create by backup script via crontab ';
+      my $snapDescription='Create by '.$script_name.' script ';
       my $hostnameCmd="hostname -f";
       my $nowCmd="date -R";
       my $now=qx($nowCmd);
