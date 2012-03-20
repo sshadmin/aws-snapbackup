@@ -122,8 +122,8 @@ my $ec2DataResponse=qx['curl' '-s' $ec2DataUrl];
 if ($debug) {
   print "Response: " .$ec2DataResponse."\n";
 }
-my $instanceDataRef=JSON->decode_json($ec2DataResponse);
-my $instanceDataText=JSON->from_json($ec2DataResponse, {utf8 => 1});
+my $instanceDataRef=JSON::XS::decode_json($ec2DataResponse);
+my $instanceDataText=JSON::XS::from_json($ec2DataResponse, {utf8 => 1});
 my $instanceId=$instanceDataRef->{"instanceId"};
 my $instanceRegion=$instanceDataRef->{"region"};
 if ($debug) {
