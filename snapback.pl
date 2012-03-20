@@ -2,11 +2,7 @@
 use strict ;
 # use warnings ;
 use Getopt::Long ;
-eval {
-  use JSON ;
-} ;
-if (@_) {
-  my $exception=shift;
+if ( not eval { require JSON; 1; } ) {
   print "Please install JSON module and make available to current user.\n";
   exit 1;
 };
