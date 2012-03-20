@@ -234,7 +234,7 @@ sub automagic {
     foreach my $file (@deviceFiles){
       open(my $FILE, "<", $file) or die $!;
       print "$file opened correctly\n" if ($debug);
-      while(my $line=$FILE){
+      while(my $line=<$FILE>){
         my @splittedLine=split(/\s+/,$line);
         my $dev=$splittedLine[0];
         my $mntPoint=$splittedLine[1];
