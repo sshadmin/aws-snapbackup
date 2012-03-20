@@ -6,7 +6,7 @@ if ( not eval { require JSON; 1; } ) {
   print "Please install JSON module and make it available to current user.\n";
   exit 1;
 }
-import JSON;
+JSON->import(qw(decode_json from_json));
 
 my $script_name = "$0" ;
 my $version     = '0.0.1' ;
