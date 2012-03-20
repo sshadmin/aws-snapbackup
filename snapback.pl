@@ -1,8 +1,15 @@
 #!/usr/bin/env perl
 use strict ;
-use warnings ;
+# use warnings ;
 use Getopt::Long ;
-use JSON ;
+use Error qw(:try);
+try {
+  use JSON ;
+} catch Error with {
+  my $exception=shift;
+  print "Please install JSON module and make available to current user.\n";
+  exit 1;
+};
 
 my $script_name = "$0" ;
 my $version     = '0.0.1' ;
@@ -342,10 +349,16 @@ sub automagic {
          $snapDescription.='by '.trim($hostname).' ';
          $snapDescription.='on '.trim($now).' ';
       # check if ec2-consistent-snapshot is present as a preferred choice
-      my @cmd=('ec2-create-snapshot',
+      my @cmd;
+      my $consistentSnapshot=0;
+      if ($consistentSnapshot) {
+        @cmd=();
+      } else {
+        @cmd=('ec2-create-snapshot',
                 '-K '.$pkFile,'-C '.$crtFile,'--region '.$instanceRegion,
                 $volumeId,
                 '-d "'.$snapDescription.'"');
+      };
       my $cmdStr = join(' ',@cmd);
       print "Create snapshot cmd is --> " . $cmdStr ."\n" if ($debug) ;
       qx('sync');
