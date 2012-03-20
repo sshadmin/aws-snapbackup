@@ -56,6 +56,7 @@ we have plans to make things better in future releases.
 
 
 ## Installation details
+* install perl-json libs (Debian/Ubuntu: libjson-perl, CentOS/RH:perl-JSON)
 * create dedicated user
 * download CRT and PK file (.pem format) and place them in your EC2 instance
 
