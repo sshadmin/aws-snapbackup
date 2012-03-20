@@ -34,28 +34,31 @@ if ($#ARGV ge 0) {
   Getopt::Long::Configure ("bundling");
 
   GetOptions(\%Opts,
-    'm=i'             =>  \$Opts{minDays}     ,
-    'mindays=i'       =>  \$Opts{minDays}     ,
+    'm=i'             =>  \$Opts{minDays}       ,
+    'mindays=i'       =>  \$Opts{minDays}       ,
 
-    'x=i'             =>  \$Opts{maxCount}    ,
-    'maxcount=i'      =>  \$Opts{maxCount}    ,
+    'x=i'             =>  \$Opts{maxCount}      ,
+    'maxcount=i'      =>  \$Opts{maxCount}      ,
 
-    'a'               =>  \$Opts{automagic}   ,
-    'automagic'       =>  \$Opts{automagic}   ,
+    'a'               =>  \$Opts{automagic}     ,
+    'automagic'       =>  \$Opts{automagic}     ,
 
-    'C=s'             =>  \$Opts{crtFile}     ,
-    'certfile=s'      =>  \$Opts{crtFile}     ,
+    'C=s'             =>  \$Opts{crtFile}       ,
+    'certfile=s'      =>  \$Opts{crtFile}       ,
 
-    'K=s'             =>  \$Opts{pkFile}       ,
-    'pkfile=s'        =>  \$Opts{pkFile}       ,
+    'K=s'             =>  \$Opts{pkFile}        ,
+    'pkfile=s'        =>  \$Opts{pkFile}        ,
 
-    'd'               =>  \$Opts{debug}       ,
-    'debug'           =>  \$Opts{debug}       ,
+    'r'               =>  \$Opts{includeRootDev},
+    'include-root'    =>  \$Opts{includeRootDev},
+
+    'd'               =>  \$Opts{debug}         ,
+    'debug'           =>  \$Opts{debug}         ,
 
     'v'               =>  \$Opts{version}       ,
     'version'         =>  \$Opts{version}       ,
 
-    'h'               =>  \$Opts{help}        ,
+    'h'               =>  \$Opts{help}          ,
     'help'            =>  \$Opts{help}
   );
 
@@ -155,6 +158,7 @@ sub help {
                                       snapshots for a single EBS volume
   -C,  --crtfile     <file>       *O* Specify the AWS certificate file
   -K,  --pkfile      <file>       *O* Specify the AWS private key file
+  -r,  --include-root             *O* Include root devices in snapshot backup
   -d,  --debug                    *O* Prints LOTS of debug info on stdout
   -h,  --help                     *O* Prints this help screen\n";
 }
@@ -221,12 +225,16 @@ sub automagic {
   sub collectLocalDevices {
     my $localDevs={};
     my $sysDevRegex='^none$|^proc$|^sysfs$|^udev$|^devpts$';
-    my $sysMntPoint='^/$|none|/proc|/sys|^/dev$|^/run$';
+    my $sysMntPoint='none|/proc|/sys|^/dev$|^/run$';
+    if (!$Opts{includeRootDev}){;
+       $sysMntPoint.='|^/$' ;
+       print "-> / device snapshot included <-\n" if($debug);
+    };
     my @deviceFiles=( '/etc/fstab', '/etc/mtab');
     foreach my $file (@deviceFiles){
-      open(FILE, "<", $file) or die $!;
+      open(my $FILE, "<", $file) or die $!;
       print "$file opened correctly\n" if ($debug);
-      while(my $line=<FILE>){
+      while(my $line=$FILE){
         my @splittedLine=split(/\s+/,$line);
         my $dev=$splittedLine[0];
         my $mntPoint=$splittedLine[1];
@@ -236,7 +244,7 @@ sub automagic {
           $localDevs->{$dev}=$mntPoint;
         }
       };
-      close(FILE);
+      close($FILE);
     }
     return $localDevs;
   }
