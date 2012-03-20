@@ -333,6 +333,7 @@ sub automagic {
       my $hostname=qx($hostnameCmd);
          $snapDescription.='by '.trim($hostname).' ';
          $snapDescription.='on '.trim($now).' ';
+      # check if ec2-consistent-snapshot is present as a preferred choice
       my @cmd=('ec2-create-snapshot',
                 '-K '.$pkFile,'-C '.$crtFile,'--region '.$instanceRegion,
                 $volumeId,

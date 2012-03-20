@@ -57,8 +57,11 @@ we have plans to make things better in future releases.
 ## Installation details
 * create dedicated user
 * download CRT and PK file (.pem format) and place them in your EC2 instance
-**__WARNING__** This files are very important! Please keep them under strict
-survellaince (perm 500) and let them be accessed only by authorized users.
+
+**__WARNING__** These files are very important! Please keep them under strict
+survellaince (perm 400 or 440) and let them be accessed only by authorized
+users.
+
 * copy this script under the dedicated user home
 * try first execution and look via AWS web GUI if a snapshot is created
   for every and each "interesting" EBS volume
@@ -68,10 +71,13 @@ survellaince (perm 500) and let them be accessed only by authorized users.
 * pay me a beer :3
 
 ### Requirements
-You will need perl-JSON librearies to execute this script since every and each
-message from AWS API are exchanged (oh, joy!) via JSON format
+* You will need perl-JSON libraries to execute this script since every and each
+  message from AWS API are exchanged (oh, joy!) via JSON format
+* If you have __ec2-consistent-snapshot__ utility installed and available it
+  will be used to create snapshots (to Do)
 
 Note to Cpt. Obvious:
+
 * Perl is a _foundamental requirement_
 * You will also need to be __inside__ you AWS instance when this script is
   executed
@@ -83,4 +89,5 @@ Note to Cpt. Obvious:
 * implement logging
 * implement error handling
 * implement error moritoring and alerting
+* add ec2-consistent_snapshot support if available
 
